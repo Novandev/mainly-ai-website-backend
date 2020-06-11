@@ -1,9 +1,11 @@
 from flask import Flask
 from flask_restful import Resource, Api,reqparse, abort
+from flask_cors import CORS
+
 
 app = Flask(__name__)
 api = Api(app)
-
+CORS(app)
 
 parser = reqparse.RequestParser()
 parser.add_argument('email')
@@ -16,10 +18,10 @@ class SendEmail(Resource):
         return {'hello': 'world'}
 
 class Test(Resource):
-    def get(self):
+    def post(self):
         args = parser.parse_args()
         print(args)
-        return {'body': 'It woooorks'}
+        return {'body': args}
 
 api.add_resource(SendEmail, '/email-contact')
 api.add_resource(Test, '/')
