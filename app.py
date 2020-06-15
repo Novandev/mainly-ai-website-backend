@@ -76,7 +76,7 @@ class SendEmail(Resource):
         return {'body': args}
 
 
-api.add_resource(SendEmail, '/email-contact/')
+api.add_resource(SendEmail, '/email-contact/','/email-contact')
 
 if __name__ == '__main__':
     gunicorn_logger = logging.getLogger('gunicorn.error')
