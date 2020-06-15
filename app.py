@@ -4,6 +4,7 @@ from flask_cors import CORS
 from celery_worker import make_celery
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+import yagmail
 import logging
 import os
 from dotenv import load_dotenv
@@ -11,7 +12,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 SENGRID_API = os.getenv("SENDGRID_API_KEY")
-
+M_PASSWORD = os.getenv("M_PASSWORD")
+USER_NAME = os.getenv("USER_NAME")
 
 app = Flask(__name__)
 api = Api(app)
@@ -30,7 +32,7 @@ def add_together(a, b):
     return a + b
 
 @celery.task()
-def send_contact_email(email,subject,text):
+def send_contact_email_sendgrid(email,subject,text):
     message = Mail(
     from_email='d@mainlyai.com',
     to_emails=email,
@@ -46,6 +48,18 @@ def send_contact_email(email,subject,text):
         logging.warning(e)
 
 
+
+@celery.task()
+def send_contact_email_yagmail(email,subject,text):
+    try:
+        #initializing the server connection
+        yag = yagmail.SMTP(user=USER_NAME, password=M_PASSWORD)
+        #sending the email
+        yag.send(to=email, subject=subject, contents=text)
+    except Exception as e:
+        logging.warning(e)
+
+
 # Argument parsers for Flask-restful
 parser = reqparse.RequestParser()
 parser.add_argument('email')
@@ -56,7 +70,7 @@ parser.add_argument('subject')
 class SendEmail(Resource):
     def post(self):
         args = parser.parse_args()
-        send_contact_email(args['email'],args['subject'],args['text'])
+        send_contact_email_yagmail(args['email'],args['subject'],args['text'])
         return {'body': args}
 
 
