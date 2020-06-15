@@ -53,7 +53,7 @@ def send_contact_email_sendgrid(email,subject,text):
 def send_contact_email_yagmail(email,subject,text):
     try:
         #initializing the server connection
-        yag = yagmail.SMTP(user=USER_NAME, password=M_PASSWORD)
+        yag = yagmail.SMTP(user=USER_NAME, password='Dad8e3cc!@')
         #sending the email
         yag.send(to=email, subject=subject, contents=text)
     except Exception as e:
