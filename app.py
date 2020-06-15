@@ -6,6 +6,13 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 import logging
 import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
+SENGRID_API = os.getenv("SENDGRID_API_KEY")
+
+
 app = Flask(__name__)
 api = Api(app)
 CORS(app)
@@ -30,7 +37,7 @@ def send_contact_email(email,subject,text):
     subject=subject,
     html_content=text)
     try:
-        sg = SendGridAPIClient(api_key='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')
+        sg = SendGridAPIClient(api_key=SENGRID_API)
         response = sg.send(message)
         # print(response.status_code)
         # print(response.body)
