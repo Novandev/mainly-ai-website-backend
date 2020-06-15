@@ -57,7 +57,9 @@ def send_contact_email_yagmail(email,subject,text):
         #sending the email
         yag.send(to=email, subject=subject, contents=text)
     except Exception as e:
-        logging.warning(e)
+        print(e)
+        logging.error(e)
+        return e
 
 
 # Argument parsers for Flask-restful
