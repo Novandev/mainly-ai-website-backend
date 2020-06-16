@@ -81,7 +81,7 @@ class SendEmail(Resource):
     def post(self):
         args = parser.parse_args()
         send_contact_email_yagmail(args['email'],args['subject'],args['text'])
-        return {'body': args}
+        return {'body': args}, 201,{'Access-Control-Allow-Origin': '*'}
 
 CORS(app, resources={r"*": {"origins": "*"}})
 api.add_resource(SendEmail, '/email-contact/','/email-contact')
