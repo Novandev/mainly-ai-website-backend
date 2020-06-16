@@ -21,9 +21,10 @@ app.config.update(
     CELERY_BROKER_URL='redis://localhost:6379',
     CELERY_RESULT_BACKEND='redis://localhost:6379'
 )
-cors = CORS(app, resources={r"*": {"origins": "http://localhost:3000"}})
-CORS(app, resources={r"*": {"origins": "http://localhost:3000"}})
-app.config['CORS_HEADERS'] = 'Access-Control-Allow-Origin'
+app.config['CORS_HEADERS'] = "Content-Type"
+app.config['CORS_RESOURCES'] = {r"/*": {"origins": "*"}}
+
+cors = CORS(app)
 
 
 
