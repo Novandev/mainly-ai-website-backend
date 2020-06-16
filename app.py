@@ -17,6 +17,7 @@ USER_NAME = os.getenv("USER_NAME")
 
 app = Flask(__name__)
 api = Api(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 app.config.update(
     CELERY_BROKER_URL='redis://localhost:6379',
     CELERY_RESULT_BACKEND='redis://localhost:6379'
@@ -24,7 +25,7 @@ app.config.update(
 app.config['CORS_HEADERS'] = "Content-Type"
 app.config['CORS_RESOURCES'] = {r"/*": {"origins": "*"}}
 
-cors = CORS(app)
+
 
 
 
@@ -71,7 +72,9 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    print(response)
     return response
+
 # Argument parsers for Flask-restful
 parser = reqparse.RequestParser()
 parser.add_argument('email')
@@ -84,7 +87,7 @@ class SendEmail(Resource):
     def post(self):
         args = parser.parse_args()
         send_contact_email_yagmail(args['email'],args['subject'],args['text'])
-        return {'body': args}, 201,{'Access-Control-Allow-Origin': '*'}
+        return {'body': args}
 
 api.add_resource(SendEmail, '/email-contact/','/email-contact')
 if __name__ == '__main__':
