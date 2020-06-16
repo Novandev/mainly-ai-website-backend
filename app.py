@@ -23,6 +23,7 @@ app.config.update(
 )
 cors = CORS(app, resources={r"*": {"origins": "*"}})
 CORS(app, resources={r"*": {"origins": "*"}})
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 
@@ -84,9 +85,7 @@ class SendEmail(Resource):
         send_contact_email_yagmail(args['email'],args['subject'],args['text'])
         return {'body': args}, 201,{'Access-Control-Allow-Origin': '*'}
 
-CORS(app, resources={r"*": {"origins": "*"}})
 api.add_resource(SendEmail, '/email-contact/','/email-contact')
-CORS(app, resources={r"*": {"origins": "*"}})
 if __name__ == '__main__':
     gunicorn_logger = logging.getLogger('gunicorn.error')
     app.logger.handlers = gunicorn_logger.handlers
