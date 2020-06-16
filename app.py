@@ -17,12 +17,15 @@ USER_NAME = os.getenv("USER_NAME")
 
 app = Flask(__name__)
 api = Api(app)
-CORS(app)
-
 app.config.update(
     CELERY_BROKER_URL='redis://localhost:6379',
     CELERY_RESULT_BACKEND='redis://localhost:6379'
 )
+CORS(app, origins="*", allow_headers=[
+    "Content-Type", "Authorization", "Access-Control-Allow-Credentials"],
+    supports_credentials=True)
+
+
 
 
 celery = make_celery(app)
@@ -70,6 +73,7 @@ parser.add_argument('text')
 parser.add_argument('subject')
 
 class SendEmail(Resource):
+    @cross_origin()
     def post(self):
         args = parser.parse_args()
         send_contact_email_yagmail(args['email'],args['subject'],args['text'])
