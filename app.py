@@ -1,9 +1,6 @@
-from flask import Flask
-from flask_restful import Resource, Api,reqparse, abort
+from flask import Flask,request
 from flask_cors import CORS,cross_origin
 from celery_worker import make_celery
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
 import yagmail
 import logging
 import os
@@ -16,7 +13,6 @@ M_PASSWORD = os.getenv("M_PASSWORD")
 USER_NAME = os.getenv("USER_NAME")
 
 app = Flask(__name__)
-api = Api(app)
 CORS(app, resources={r"/*": {"origins": "*"}})
 app.config.update(
     CELERY_BROKER_URL='redis://localhost:6379',
@@ -35,23 +31,6 @@ celery = make_celery(app)
 @celery.task()
 def add_together(a, b):
     return a + b
-
-@celery.task()
-def send_contact_email_sendgrid(email,subject,text):
-    message = Mail(
-    from_email='d@mainlyai.com',
-    to_emails=email,
-    subject=subject,
-    html_content=text)
-    try:
-        sg = SendGridAPIClient(api_key=SENGRID_API)
-        response = sg.send(message)
-        # print(response.status_code)
-        # print(response.body)
-        # print(response.headers)
-    except Exception as e:
-        logging.warning(e)
-
 
 
 @celery.task()
@@ -76,29 +55,13 @@ def after_request(response):
     return response
 
 # Argument parsers for Flask-restful
-parser = reqparse.RequestParser()
-parser.add_argument('email')
-parser.add_argument('name')
-parser.add_argument('text')
-parser.add_argument('subject')
+@app.route("/email-contact/")
+@cross_origin()
+def email_contact():
+    args = request.args
+    send_contact_email_yagmail(args['email'],args['subject'],args['text'])
+    return {'body': args}
 
-class SendEmail(Resource):
-
-    @cross_origin()
-    def options(self):
-        # Make sure the OPTIONS request is also handled for CORS
-        # The "automatic_options" will handle this, no need to define a return here:
-        args = parser.parse_args()
-        send_contact_email_yagmail(args['email'],args['subject'],args['text'])
-        return {'body': args}
-
-    @cross_origin()
-    def post(self):
-        args = parser.parse_args()
-        send_contact_email_yagmail(args['email'],args['subject'],args['text'])
-        return {'body': args}
-
-api.add_resource(SendEmail, '/email-contact/','/email-contact')
 if __name__ == '__main__':
     gunicorn_logger = logging.getLogger('gunicorn.error')
     app.logger.handlers = gunicorn_logger.handlers
