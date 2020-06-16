@@ -23,7 +23,7 @@ app.config.update(
 )
 cors = CORS(app, resources={r"*": {"origins": "*"}})
 CORS(app, resources={r"*": {"origins": "*"}})
-app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['CORS_HEADERS'] = 'Access-Control-Allow-Origin'
 
 
 
