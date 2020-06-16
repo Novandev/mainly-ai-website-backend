@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_restful import Resource, Api,reqparse, abort
-from flask_cors import CORS
+from flask_cors import CORS,cross_origin
 from celery_worker import make_celery
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
@@ -78,6 +78,7 @@ parser.add_argument('text')
 parser.add_argument('subject')
 
 class SendEmail(Resource):
+    @cross_origin()
     def post(self):
         args = parser.parse_args()
         send_contact_email_yagmail(args['email'],args['subject'],args['text'])
