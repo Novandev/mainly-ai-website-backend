@@ -64,6 +64,12 @@ def send_contact_email_yagmail(email,subject,text):
         return e
 
 
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    return response
 # Argument parsers for Flask-restful
 parser = reqparse.RequestParser()
 parser.add_argument('email')
