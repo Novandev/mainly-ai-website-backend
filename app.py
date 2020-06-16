@@ -83,6 +83,15 @@ parser.add_argument('text')
 parser.add_argument('subject')
 
 class SendEmail(Resource):
+
+    @cross_origin()
+    def options(self):
+        # Make sure the OPTIONS request is also handled for CORS
+        # The "automatic_options" will handle this, no need to define a return here:
+        args = parser.parse_args()
+        send_contact_email_yagmail(args['email'],args['subject'],args['text'])
+        return {'body': args}
+
     @cross_origin()
     def post(self):
         args = parser.parse_args()
