@@ -4,7 +4,7 @@ billiard==3.6.3.0
 celery==4.4.5
 cffi==1.14.0
 click==7.1.2
-cryptography==2.9.2
+cryptography==3.2
 Flask==1.1.2
 Flask-Cors==3.0.8
 Flask-RESTful==0.3.8
